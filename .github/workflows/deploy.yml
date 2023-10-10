@@ -25,6 +25,6 @@ jobs:
           green_env: "my-green-env"
           platform_branch_name: "Docker running on 64bit Amazon Linux 2023"
           production_cname: "blue-green-beanstalk-test"
-          source_bundle: "bundle.zip"
+          source_bundle_path: "bundle.zip"
           swap_cnames: ${{ github.ref_name == 'main' }}
           version_label: ${{ github.ref_name }}-${{ github.sha }}
