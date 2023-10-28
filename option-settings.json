@@ -30,8 +30,8 @@
     "Value": "aws-elasticbeanstalk-ec2-role"
   },
   {
-    "Namespace": "aws:elasticbeanstalk:environment:process:https",
-    "OptionName": "Port",
-    "Value": "443"
+    "Namespace": "aws:autoscaling:launchconfiguration",
+    "OptionName": "EC2KeyName",
+    "Value": "aws-eb"
   }
 ]
