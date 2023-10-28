@@ -1,8 +1,18 @@
 #!/bin/bash
 set -e
 
-env_id=$(cat ENV_ID)
-prod_cname=$(cat PROD_CNAME) 2>/dev/null # need to know ahead of time if swapping cnames
+if [ $IS_DEVELOPMENT ]
+then
+  env_id=
+else
+  cfn=/opt/elasticbeanstalk/deployment/cfn-metadata-cache.json
+  env_id=$(cat $cfn | jq -r '.EbResource."AWS::ElasticBeanstalk::Metadata".EnvironmentId')
+fi
+
+if [ -e PROD_CNAME ]; then
+    prod_cname=$(cat PROD_CNAME) # need to know ahead of time if swapping cnames
+fi
+
 env=$(aws elasticbeanstalk describe-environments --environment-ids $env_id)
 server_names=()
 
@@ -14,16 +24,6 @@ else
 fi
 
 endpoint_url=$(echo $env | jq -r '.Environments[0].EndpointURL')
-
-if [ ! is_ip_address $endpoint_url; ] then
-  server_names+=($endpoint_url)
-fi
-
-
-for domain in "${server_names[@]}"; do
-    export SERVER_NAME=$domain
-    envsubst < default.conf.template > nginx/$domain.conf
-done
 
 is_ip_address() {
   local ip="$1"
@@ -39,3 +39,15 @@ is_ip_address() {
     return 1
   fi
 }
+
+if ! is_ip_address $endpoint_url;
+then
+  server_names+=($endpoint_url)
+fi
+
+mkdir -p nginx
+for domain in "${server_names[@]}"; do
+    export SERVER_NAME=$domain
+    envsubst < default.conf.template > nginx/$domain.conf
+done
+
