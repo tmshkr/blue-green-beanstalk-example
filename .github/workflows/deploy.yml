@@ -24,6 +24,7 @@ jobs:
           blue_env: "my-blue-env"
           green_env: "my-green-env"
           option_settings: option-settings.json
+          ports: 80,443
           platform_branch_name: "Docker running on 64bit Amazon Linux 2023"
           promote: ${{ github.ref_name == 'dev' }}
           source_bundle: "bundle.zip"
