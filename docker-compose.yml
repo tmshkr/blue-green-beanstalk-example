@@ -7,9 +7,9 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      - ./nginx:/etc/nginx/user_conf.d
       - ./public:/usr/share/nginx/html
       - nginx_secrets:/etc/letsencrypt
-      - ./nginx:/etc/nginx/templates
     restart: unless-stopped
     environment:
       - SERVER_NAME=localhost
