@@ -2,8 +2,19 @@ version: "3.8"
 
 services:
   web:
-    image: nginx:alpine3.18-slim
+    image: jonasal/nginx-certbot:5-alpine
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./public:/usr/share/nginx/html
+      - nginx_secrets:/etc/letsencrypt
+      - ./nginx:/etc/nginx/templates
+    restart: unless-stopped
+    environment:
+      - SERVER_NAME=localhost
+      - CERTBOT_EMAIL=test@example.com
+      - USE_LOCAL_CA=1
+
+volumes:
+  nginx_secrets:

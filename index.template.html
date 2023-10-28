@@ -4,13 +4,50 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>$ENVIRONMENT_NAME</title>
+    <style>
+      body.blue {
+        background-color: cornflowerblue;
+      }
+      body.green {
+        background-color: lightgreen;
+      }
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        text-align: center;
+        margin-top: 10vh;
+      }
+      table {
+        margin: 0 auto;
+        border-collapse: collapse;
+        border: 1px solid black;
+        font-family: monospace;
+      }
+      td {
+        border: 1px solid black;
+        padding: 0.5em 1em;
+        text-align: center;
+      }
+    </style>
   </head>
-  <body>
+  <body class="$BG_COLOR">
     <h1>Hello World</h1>
-    <ul>
-      <li>Environment ID: $ENVIRONMENT_ID</li>
-      <li>Environment Name: $ENVIRONMENT_NAME</li>
-      <li>Version Label: $VERSION_LABEL</li>
-    </ul>
+    <table>
+      <tr>
+        <td>Environment ID</td>
+        <td>$ENVIRONMENT_ID</td>
+      </tr>
+      <tr>
+        <td>Environment Name</td>
+        <td>$ENVIRONMENT_NAME</td>
+      </tr>
+      <tr>
+        <td>Version Label</td>
+        <td>$VERSION_LABEL</td>
+      </tr>
+    </table>
   </body>
 </html>
