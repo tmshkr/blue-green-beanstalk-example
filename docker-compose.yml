@@ -12,9 +12,7 @@ services:
       - nginx_secrets:/etc/letsencrypt
     restart: unless-stopped
     environment:
-      - SERVER_NAME=localhost
       - CERTBOT_EMAIL=test@example.com
-      - USE_LOCAL_CA=1
 
 volumes:
   nginx_secrets:
