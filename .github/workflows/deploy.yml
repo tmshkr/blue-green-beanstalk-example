@@ -25,8 +25,9 @@ jobs:
           green_env: "my-green-env"
           platform_branch_name: "Docker running on 64bit Amazon Linux 2023"
           production_cname: "blue-green-beanstalk-prod" # must be available
-          promote: ${{ github.ref_name == 'main' }}
+          promote: ${{ github.ref_name == 'dev' }}
           source_bundle: "bundle.zip"
           staging_cname: "blue-green-beanstalk-staging" # must be available
+          strategy: shared_alb
           version_description: "Deployed by ${{ github.triggering_actor }}"
           version_label: ${{ github.ref_name }}-${{ github.sha }}
