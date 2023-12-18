@@ -9,25 +9,31 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
       - name: Generate source bundle
         run: zip -r bundle.zip . -x '*.git*'
       - name: Deploy
         uses: tmshkr/blue-green-beanstalk@latest
         with:
           app_name: "test-app"
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_region: ${{ vars.AWS_REGION }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           blue_env: "my-blue-env"
           deploy: true
           green_env: "my-green-env"
           platform_branch_name: "Docker running on 64bit Amazon Linux 2023"
-          production_cname: "blue-green-beanstalk-prod" # must be available
+          production_cname: "blue-green-beanstalk-prod"
           promote: ${{ github.ref_name == 'main' }}
           source_bundle: "bundle.zip"
-          staging_cname: "blue-green-beanstalk-staging" # must be available
-          version_description: "Deployed by ${{ github.triggering_actor }}"
+          staging_cname: "blue-green-beanstalk-staging"
+          version_description: ${{ github.event.head_commit.message }}
           version_label: ${{ github.ref_name }}-${{ github.sha }}
