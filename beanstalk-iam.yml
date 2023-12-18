@@ -1,9 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Description: >
-  Creates an OIDC provider and role for use with GitHub Actions.
-  For more information on using OIDC to connect to AWS from GitHub Actions,
-  see https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services.
+  Creates an OIDC provider and role for use CI/CD via GitHub Actions, along with the necessary roles to deploy an EC2 instance via Elastic Beanstalk.
 
 Parameters:
   AudienceList:
@@ -30,6 +28,30 @@ Metadata:
           - AudienceList
 
 Resources:
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "ec2.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier"
+        - "arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker"
+        - "arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier"
+        - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      RoleName: "aws-elasticbeanstalk-ec2-role"
+  InstanceProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Roles:
+        - !Ref "InstanceRole"
+      InstanceProfileName: "aws-elasticbeanstalk-ec2-role"
   GitHubIdentityProvider:
     Type: AWS::IAM::OIDCProvider
     Properties:
@@ -60,6 +82,22 @@ Resources:
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/AdministratorAccess-AWSElasticBeanstalk"
         - "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
+  ServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "elasticbeanstalk.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth"
+        - "arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy"
+      RoleName: "aws-elasticbeanstalk-service-role"
 
 Outputs:
   RoleARN:
