@@ -1,7 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 
-Description: >
-  Creates an OIDC provider and role for use CI/CD via GitHub Actions, along with the necessary roles to deploy an EC2 instance via Elastic Beanstalk.
+Description: Creates the necessary roles to deploy an EC2 instance via Elastic Beanstalk, along with an OIDC provider and role for use with GitHub Actions.
 
 Parameters:
   AudienceList:
@@ -22,7 +21,7 @@ Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
-          default: "GitHub Action Info"
+          default: "GitHub Actions Configuration"
         Parameters:
           - SubjectClaimFilters
           - AudienceList
@@ -77,7 +76,7 @@ Resources:
                 "token.actions.githubusercontent.com:aud": !Ref AudienceList
               StringLike:
                 "token.actions.githubusercontent.com:sub": !Ref SubjectClaimFilters
-      Description: IAM Role for use in GitHub Actions
+      Description: IAM Role for use with GitHub Actions
       RoleName: GitHubActions
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/AdministratorAccess-AWSElasticBeanstalk"
@@ -97,9 +96,10 @@ Resources:
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth"
         - "arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy"
+      Path: "/service-role/"
       RoleName: "aws-elasticbeanstalk-service-role"
 
 Outputs:
   RoleARN:
-    Description: arn of service role for use in GitHub actions
+    Description: ARN of IAM role for use with GitHub Actions
     Value: !GetAtt GitHubActionsRole.Arn
