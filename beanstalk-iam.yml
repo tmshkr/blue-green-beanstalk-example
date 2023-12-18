@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: >
+  Creates an OIDC provider and role for use with GitHub Actions.
+  For more information on using OIDC to connect to AWS from GitHub Actions,
+  see https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services.
+
+Parameters:
+  AudienceList:
+    Type: CommaDelimitedList
+    Default: sts.amazonaws.com
+    Description: >
+      Comma seperated list of allowed audience for the tokens.
+      Default is audience for the official AWS configure action from https://github.com/aws-actions/configure-aws-credentials
+  SubjectClaimFilters:
+    Type: CommaDelimitedList
+    Description: >
+      Subject claim filter for valid tokens.
+      Default allows any branch or tag of the CMSgov/macpro-quickstart-serverless to assume the role.
+      See https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#example-subject-claims
+      for examples of fitlering by branch or deployment environment.
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "GitHub Action Info"
+        Parameters:
+          - SubjectClaimFilters
+          - AudienceList
+
+Resources:
+  GitHubIdentityProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      ClientIdList: !Ref AudienceList
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1
+        - 1c58a3a8518e8759bf075b76b750d4f2df264fcd
+        - 1b511abead59c6ce207077c0bf0e0043b1382612
+      Url: https://token.actions.githubusercontent.com
+  GitHubActionsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !GetAtt GitHubIdentityProvider.Arn
+            Action:
+              - "sts:AssumeRoleWithWebIdentity"
+            Condition:
+              StringEquals:
+                "token.actions.githubusercontent.com:aud": !Ref AudienceList
+              StringLike:
+                "token.actions.githubusercontent.com:sub": !Ref SubjectClaimFilters
+      Description: IAM Role for use in GitHub Actions
+      RoleName: GitHubActions
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AdministratorAccess-AWSElasticBeanstalk"
+        - "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
+
+Outputs:
+  RoleARN:
+    Description: arn of service role for use in GitHub actions
+    Value: !GetAtt GitHubActionsRole.Arn
