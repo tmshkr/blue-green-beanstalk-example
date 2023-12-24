@@ -80,6 +80,14 @@ Resources:
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/AdministratorAccess-AWSElasticBeanstalk"
         - "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
+      Policies:
+        - PolicyName: "AllowUpdateTerminationProtection"
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Resource: "*"
+                Action:
+                  - "cloudformation:UpdateTerminationProtection"
   ServiceRole:
     Type: AWS::IAM::Role
     Properties:
