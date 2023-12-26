@@ -23,7 +23,7 @@ jobs:
       - name: Generate source bundle
         run: zip -r bundle.zip . -x '*.git*'
       - name: Deploy
-        uses: tmshkr/blue-green-beanstalk@latest
+        uses: tmshkr/blue-green-beanstalk@dev
         with:
           app_name: "test-app"
           aws_region: ${{ vars.AWS_REGION }}
@@ -35,5 +35,6 @@ jobs:
           promote: ${{ github.ref_name == 'main' }}
           source_bundle: "bundle.zip"
           staging_cname: "blue-green-beanstalk-staging"
+          strategy: "shared_alb"
           version_description: ${{ github.event.head_commit.message }}
           version_label: ${{ github.ref_name }}-${{ github.sha }}
