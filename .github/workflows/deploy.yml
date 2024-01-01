@@ -23,7 +23,7 @@ jobs:
       - name: Generate source bundle
         run: zip -r bundle.zip . -x '*.git*'
       - name: Deploy
-        uses: tmshkr/blue-green-beanstalk@use-shared-alb
+        uses: tmshkr/blue-green-beanstalk@v4
         with:
           app_name: "test-app"
           aws_region: ${{ vars.AWS_REGION }}
@@ -32,9 +32,8 @@ jobs:
           green_env: "my-green-env"
           platform_branch_name: "Docker running on 64bit Amazon Linux 2023"
           production_cname: "blue-green-beanstalk-prod"
-          promote: ${{ github.ref_name == 'main' }}
           source_bundle: "bundle.zip"
           staging_cname: "blue-green-beanstalk-staging"
-          use_shared_alb: true
+          swap_cnames: ${{ github.ref_name == 'main' }}
           version_description: ${{ github.event.head_commit.message }}
           version_label: ${{ github.ref_name }}-${{ github.sha }}
