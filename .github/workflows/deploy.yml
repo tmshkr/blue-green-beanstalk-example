@@ -23,7 +23,7 @@ jobs:
       - name: Generate source bundle
         run: zip -r bundle.zip . -x '*.git*'
       - name: Deploy
-        uses: tmshkr/blue-green-beanstalk@v4
+        uses: tmshkr/blue-green-beanstalk@send-command
         with:
           app_name: "test-app"
           aws_region: ${{ vars.AWS_REGION }}
@@ -32,6 +32,9 @@ jobs:
           green_env: "my-green-env"
           platform_branch_name: "Docker running on 64bit Amazon Linux 2023"
           production_cname: "blue-green-beanstalk-prod"
+          send_command: |
+            echo "it works!" >>./public/test.txt
+            date >>./public/test.txt
           source_bundle: "bundle.zip"
           staging_cname: "blue-green-beanstalk-staging"
           swap_cnames: ${{ github.ref_name == 'main' }}
