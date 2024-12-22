@@ -38,12 +38,20 @@ Resources:
                 - "ec2.amazonaws.com"
             Action:
               - "sts:AssumeRole"
+      RoleName: "aws-elasticbeanstalk-ec2-role"
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier"
         - "arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker"
         - "arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier"
         - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-      RoleName: "aws-elasticbeanstalk-ec2-role"
+      Policies:
+        - PolicyName: "BlueGreenBeanstalkInstancePolicy"
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Resource: "*"
+                Action:
+                  - "elasticbeanstalk:DescribeEnvironments"
   InstanceProfile:
     Type: "AWS::IAM::InstanceProfile"
     Properties:
@@ -55,9 +63,7 @@ Resources:
     Properties:
       ClientIdList: !Ref AudienceList
       ThumbprintList:
-        - 6938fd4d98bab03faadb97b34396831e3780aea1
-        - 1c58a3a8518e8759bf075b76b750d4f2df264fcd
-        - 1b511abead59c6ce207077c0bf0e0043b1382612
+        - ffffffffffffffffffffffffffffffffffffffff
       Url: https://token.actions.githubusercontent.com
   GitHubActionsRole:
     Type: AWS::IAM::Role
@@ -81,13 +87,22 @@ Resources:
         - "arn:aws:iam::aws:policy/AdministratorAccess-AWSElasticBeanstalk"
         - "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
       Policies:
-        - PolicyName: "AllowUpdateTerminationProtection"
+        - PolicyName: "BlueGreenBeanstalkDeploymentPolicy"
           PolicyDocument:
             Statement:
               - Effect: Allow
                 Resource: "*"
                 Action:
+                  - "ssm:ListCommands"
+                  - "ssm:SendCommand"
                   - "cloudformation:UpdateTerminationProtection"
+        - PolicyName: "BlueGreenBeanstalkS3Policy"
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Resource: !Sub "arn:${AWS::Partition}:s3:::elasticbeanstalk-${AWS::Region}-${AWS::AccountId}*"
+                Action:
+                  - "s3:*"
   ServiceRole:
     Type: AWS::IAM::Role
     Properties:
