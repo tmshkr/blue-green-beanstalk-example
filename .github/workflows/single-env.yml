@@ -28,6 +28,7 @@ jobs:
           send_command: |
             echo "it works!" >>./public/test.html
             date >>./public/test.html
+            sudo .platform/hooks/postdeploy/print-env-info.sh
           source_bundle: "bundle.zip"
           single_env: "single-env"
           single_env_cname: "blue-green-beanstalk-single-env"
