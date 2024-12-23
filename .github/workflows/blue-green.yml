@@ -31,6 +31,7 @@ jobs:
           send_command: |
             echo "it works!" >>./public/test.html
             date >>./public/test.html
+            sudo .platform/hooks/postdeploy/print-env-info.sh
           source_bundle: "bundle.zip"
           staging_cname: "blue-green-beanstalk-staging"
           swap_cnames: true
