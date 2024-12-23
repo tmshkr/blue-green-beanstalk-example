@@ -1,4 +1,4 @@
-name: Example Blue/Green Deployment Workflow
+name: Blue/Green Deployment
 on:
   workflow_dispatch:
 

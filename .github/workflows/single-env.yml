@@ -1,4 +1,4 @@
-name: Example Deploy Single-Environment Workflow
+name: Single-Environment Deployment
 on:
   workflow_dispatch:
 
