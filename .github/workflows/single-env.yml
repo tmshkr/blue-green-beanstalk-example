@@ -1,10 +1,6 @@
 name: Example Deploy Workflow
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-      - staging
 
 jobs:
   deploy:
