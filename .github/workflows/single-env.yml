@@ -1,0 +1,39 @@
+name: Example Deploy Workflow
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Generate source bundle
+        run: zip -r bundle.zip . -x '*.git*'
+      - name: Deploy
+        uses: tmshkr/blue-green-beanstalk@send-command
+        with:
+          app_name: "test-app"
+          aws_region: ${{ vars.AWS_REGION }}
+          deploy: true
+          platform_branch_name: "Docker running on 64bit Amazon Linux 2023"
+          send_command: |
+            echo "it works!" >>./public/test.html
+            date >>./public/test.html
+          source_bundle: "bundle.zip"
+          single_env: "single-env"
+          single_env_cname: "blue-green-beanstalk-single-env"
+          version_description: ${{ github.event.head_commit.message }}
+          version_label: ${{ github.ref_name }}-${{ github.sha }}
