@@ -2,7 +2,7 @@
 
 This is a simple example of how to use [Blue/Green Beanstalk](https://github.com/tmshkr/blue-green-beanstalk).
 
-There are two sample GitHub Actions workflow:
+There are two sample GitHub Actions workflows:
 
 - [blue-green.yml](.github/workflows/blue-green.yml) uses two environments to perform a blue/green deployment.
 - [single-env.yml](.github/workflows/single-env.yml) uses a single environment, which may be useful for development/testing.
