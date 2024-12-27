@@ -19,7 +19,7 @@ jobs:
       - name: Generate source bundle
         run: zip -r bundle.zip . -x '*.git*'
       - name: Deploy
-        uses: tmshkr/blue-green-beanstalk@send-command
+        uses: tmshkr/blue-green-beanstalk@v5
         with:
           app_name: "test-app"
           aws_region: ${{ vars.AWS_REGION }}
@@ -30,7 +30,7 @@ jobs:
             date >>./public/test.html
             sudo .platform/hooks/postdeploy/print-env-info.sh
           source_bundle: "bundle.zip"
-          single_env: "single-env"
+          single_env: "my-single-env"
           single_env_cname: "blue-green-beanstalk-single-env"
           version_description: ${{ github.event.head_commit.message }}
           version_label: ${{ github.ref_name }}-${{ github.sha }}
